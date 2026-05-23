@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rimescolatore di Lettere – Trova Parole Italiane | WordUnscrambler.it</title>
+<meta name="description" content="Rimescola le tue lettere e trova tutte le parole italiane possibili in un istante. Strumento gratuito per Scarabeo, Wordle e cruciverba.">
+<meta name="keywords" content="rimescolatore lettere, parole con queste lettere, anagramma italiano, aiuto scarabeo, trova parole">
+<link rel="canonical" href="https://wordunscrambler.it/">
+<style>
+  :root {
+    --primary: #009246;
+    --primary-dark: #006830;
+    --accent: #ce2b37;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  header { background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  header h1 { font-size: 1.5rem; font-weight: 700; }
+  header span { font-size: 0.85rem; opacity: 0.75; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%); color: white; padding: 3rem 1.5rem 4rem; text-align: center; }
+  .hero h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.75rem; line-height: 1.2; }
+  .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 520px; margin: 0 auto 2rem; }
+  .search-box { background: white; border-radius: 16px; padding: 1.5rem; max-width: 600px; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+  .input-row { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .input-row input { flex: 1; padding: 0.9rem 1.2rem; border: 2px solid var(--border); border-radius: 10px; font-size: 1.2rem; letter-spacing: 0.1em; text-transform: uppercase; outline: none; transition: border-color 0.2s; color: var(--text); }
+  .input-row input:focus { border-color: var(--primary); }
+  .input-row input::placeholder { text-transform: none; letter-spacing: 0; color: #aaa; font-size: 1rem; }
+  .btn-primary { padding: 0.9rem 1.8rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .options-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+  .options-row label { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+  .options-row select { padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; }
+  .filters-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+  .filters-row label { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; }
+  .filter-input { width: 65px; padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .filter-input:focus { outline: none; border-color: var(--primary); }
+  main { max-width: 900px; margin: -2rem auto 0; padding: 0 1.5rem 4rem; position: relative; z-index: 1; }
+  #results-area { display: none; }
+  .results-header { background: var(--card); border-radius: 12px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+  .results-header h3 { font-size: 1.1rem; }
+  .results-header span { font-size: 0.9rem; color: var(--muted); }
+  .length-tabs { background: var(--card); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow-x: auto; white-space: nowrap; }
+  .tab-btn { display: inline-block; padding: 0.4rem 1rem; margin-right: 0.4rem; border: 2px solid var(--border); border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: white; color: var(--muted); transition: all 0.15s; }
+  .tab-btn.active, .tab-btn:hover { background: var(--primary); border-color: var(--primary); color: white; }
+  .words-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.6rem; }
+  .word-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.95rem; font-weight: 600; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .word-card:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,146,70,0.15); }
+  .word-card .pts { font-size: 0.7rem; color: var(--muted); font-weight: 400; }
+  .section-title { font-size: 1rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1.5rem 0 0.75rem; padding-left: 0.25rem; }
+  .no-results { background: var(--card); border-radius: 12px; padding: 3rem; text-align: center; color: var(--muted); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .no-results h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text); }
+  .info-section { background: var(--card); border-radius: 12px; padding: 2rem; margin-top: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .info-section h2 { font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary); }
+  .info-section p { color: var(--muted); line-height: 1.7; margin-bottom: 0.75rem; }
+  .faq-item { margin-bottom: 1.5rem; }
+  .faq-item h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .faq-item p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+  .copy-toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--success); color: white; padding: 0.7rem 1.5rem; border-radius: 30px; font-weight: 600; transition: transform 0.3s; z-index: 100; }
+  .copy-toast.show { transform: translateX(-50%) translateY(0); }
+  footer { background: var(--primary-dark); color: rgba(255,255,255,0.7); text-align: center; padding: 2rem; font-size: 0.85rem; }
+  footer a { color: rgba(255,255,255,0.9); text-decoration: none; }
+  @media(max-width:600px) { .hero h2 { font-size: 1.6rem; } .input-row { flex-direction: column; } .words-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔤 WordUnscrambler<span style="color:var(--accent)">.it</span></h1>
+  <span>Rimescolatore di lettere in italiano</span>
+</header>
+
+<div class="hero">
+  <h2>Rimescola le Lettere in Italiano</h2>
+  <p>Inserisci le tue lettere mescolate e trova immediatamente tutte le parole italiane possibili.</p>
+  <div class="search-box">
+    <div class="input-row">
+      <input type="text" id="letterInput" placeholder="es. LAORE → LAVORE" maxlength="15" autocomplete="off" spellcheck="false">
+      <button class="btn-primary" onclick="unscramble()">Cerca</button>
+    </div>
+    <div class="options-row">
+      <label>Lunghezza: <select id="lengthFilter" onchange="filterByLength()">
+        <option value="all">Tutte</option>
+      </select></label>
+      <label><input type="checkbox" id="exactOnly"> Solo lunghezza esatta</label>
+      <label style="margin-left:auto; color: var(--primary); font-weight:600;" id="wordCount"></label>
+    </div>
+    <div class="filters-row">
+      <label>Inizia con: <input type="text" id="startsWith" class="filter-input" maxlength="3" placeholder="A…" autocomplete="off"></label>
+      <label>Finisce con: <input type="text" id="endsWith" class="filter-input" maxlength="3" placeholder="…E" autocomplete="off"></label>
+      <label>Contiene: <input type="text" id="contains" class="filter-input" maxlength="3" placeholder="ST" autocomplete="off"></label>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div id="results-area">
+    <div class="results-header">
+      <h3 id="results-title">Risultati</h3>
+      <span id="results-meta"></span>
+    </div>
+    <div class="length-tabs" id="length-tabs"></div>
+    <div id="words-container"></div>
+  </div>
+  <div id="no-results" style="display:none" class="no-results">
+    <h3>Nessuna parola trovata</h3>
+    <p>Prova con altre lettere o controlla l'ortografia.</p>
+  </div>
+
+  <div class="info-section">
+    <h2>Come funziona il rimescolatore di lettere?</h2>
+    <p>Il nostro strumento gratuito scorre oltre 80.000 parole italiane in pochi millisecondi. Basta inserire le lettere mescolate — l'algoritmo testa tutte le combinazioni possibili e mostra tutte le parole valide, ordinate per lunghezza e punteggio allo Scarabeo.</p>
+    <p>Perfetto per lo <strong>Scarabeo</strong>, il <strong>Wordle in italiano</strong>, i <strong>cruciverba</strong>, gli <strong>anagrammi</strong> e tutti i giochi di parole in italiano.</p>
+    <div class="faq-item" style="margin-top:1.5rem">
+      <h3>A cosa serve il rimescolatore?</h3>
+      <p>Ti aiuta a risolvere anagrammi, trovare parole allo Scarabeo, completare cruciverba e vincere a tutti i tuoi giochi di lettere preferiti.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Sono supportati gli accenti?</h3>
+      <p>Sì! Puoi inserire à, è, é, ì, ò, ù direttamente oppure usare la lettera base senza accento.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Quante parole ci sono nel dizionario?</h3>
+      <p>Il nostro dizionario italiano contiene oltre 80.000 parole comuni dell'italiano standard.</p>
+    </div>
+  </div>
+</main>
+
+<div class="copy-toast" id="toast">✓ Copiato!</div>
+
+<footer>
+  <p>© 2026 WordUnscrambler.it – Rimescolatore di lettere in italiano</p>
+  <p style="margin-top:0.5rem"><a href="https://wordunscrambler.de">🇩🇪 Deutsch</a> &nbsp;|&nbsp; <a href="https://wordunscrambler.fr">🇫🇷 Français</a></p>
+  <p style="margin-top:0.5rem;font-size:0.8rem"><a href="/privacy.html">Privacy</a></p>
+</footer>
+
+<script>
+const WORDS = `abba abete able abuso aceto acido acme acne acro acuto adipe adito adore adoro
+aduso aedo afide agave agile agire aglio agone agora agra agro aide aio aire alea
+alga algo alibi alpe altra alvo amara amaro amare amico amido ampio amore ampio
+ancora ande anela angue anima anime animo aniso anite anno ante anzi apice apire
+arabo arare arare archi arco ardea arene arido arme armo aroma arpa arso arte
+arula asino asma asola aspe aspo asse assi astro ateo atone atrio atro atto autunno
+avena avere avido avolo avvio baco bado baga balza barca barge bario baro bello
+bende bere berta biffo bile biro bolo bolso bomba bordo boria borsa breve brina
+brocca bruma bruna bruto buca buffa buffo buio burla busta cade cadi cado cala cale
+cali calo cama came camo cane canto capo cappa caro carte caso cece ceda cede cela
+celo cena cera cervo ceto cibo cima cinge cite citta coda cola coma come comi cono
+conto copia corda cormo coro corpo cosa cosso cote cova cresi cruda crude crudo
+cubo cuoco cura curva dace dama damo dana dare dati dato davo delo demo deva devo
+diga dino dire diva doge dolo dome dora dote dove duca duce duna duro duto edere
+edile egida elce elmo endo erba erba erema erica erne ernia esse etna euro fado
+fame faro fare fata fato fava favo fede feto fide fido fiera fila fine fino fiore
+fora fore fica foga fola forse forte frana freno fuga fumo fuoco furo gala gale
+gara gelo gemo geni gent gero giga giro gola golo gomo grado grana grana greca
+greto grano grato grida gride grido grilo groma grue guida gusto idea ieri igna
+igno imba iodo iota ipse irma iran isca isle isola lago lama lame lana lapso lare
+lari laro lassa late lava ledo lega lene leva lice lido lipo lira lite lode logo
+loto lupo lurco lupo lutto mace mago mala male malo manco mango mare mario maro
+maso mate maze medi melo melo memo mena meno meta mida mila mima mina miro mito
+modo mole mono moto multa muna mura nace nano nato neto neve nido nime nodo noia
+nome nomo norma nota nube nuca nudo nuoco oble olma olmo onda onde orbe orbo orco
+orgia orlo orna orsa orso orzo osca ossa otto pago pala pale palo pala pane
+pargo paro pave pena pera peri pero peso peto pia pica pigi pino pipa pira pizza
+pleco pode podo polo pomo pone poro posa posse porta pote poto prada prato prega
+pria prima prima privo prono puca pulce puma punto raca rade radi rago rago ramo
+rana raro rasa rase raso rata rege reio rema remo rena repe rese rete reto rine
+rina rino riso rito roba roca roma romo rona rosa roso rota roto rove ruba rufo
+ruga rugo rumo runa ruso rade sale salmo salsa salto samo sano sara sarda sarda
+sardo sapo saro sega semi seme sera seta sevo sice side sima sine sino sito smag
+soave sodo sola sole solo soma sono sopa sore sorgo sorso soto sozzo spago spala
+sparo spora sposa stata stato stela stelo stira stiva stola stria suca sudo sugo
+sumo sure tace taco tale talpa tana taro tela tema temo tenta terra teso testa tiro
+tocc toga tola toma tomo tono topo tora torba torma torso torta tosta toza trao
+trema trepa tresa tribo trigo tripa triso trita trom tubo tuffa tuba tufo tuga tulla
+tulpa turba ture ubero ultra unico unite unpe uova uovo urbo urna urta usato usato
+utero vaga vago vale valore valse vano vara varo varo vena vera vero vert vibre
+vide vida viga vigo vile vina vino vira vita vivo voce vola volo vota zona zoni
+zona zoppo zurla abito acaso addio adito agio aglio agone agora agro aiola airolo
+aiuto alabio alana albero alce aldea aldino alga alito alone altare alte alteri
+altone alversa amaca amato ambone ameno amenti ami amile amiru amone ancora andata
+andito anelo aneto anfore anigo anime animo annoto anodo ansia antico antico apice
+apode aporia appena arago arante arcano arene areso arioso arite armonia arno arola
+arosia aroso arpe arredo arso arteria ascio asco asino aspide assai astio astuta
+attore automa avanza avaro avena avenza azione balia banda bardo barena barone
+basso bastone becco berga berta bione biota biotto birra bisca bisce bocca bolla
+bombe bomba bosco botte braci branco brando bravo bromo bronza bugia bulbo calca
+calice calza camela camma campo capra carica carena carne carta casta castone cauda
+causa cavia cedola cerise cernie cesta cetro cieco cipro cipro circo cisto citara
+cisna citrus clave clogga cobalt cobra codice cofana cogna corbe corne corsa coscia
+cosmo cotone covone cozza creola cresta crisma crudo cubito cursa damia dasca delto
+demos depone desma dieta diodo disco disio dogma doina dolio doma domina drago
+drica drupe ducat dunco duoma dustro ebano ecco ecloga egida egiro elatro elettra
+emano emera emiro enciclo enula ernia erode errea etilo evoca falda falcon falso
+fanfara fanno faraone farsa fascia fasto fauno favola favore favre fedele felce
+fenda fendere ferrea ferula fiato fiera figlio fiera filare filme filone finale
+fionda firma fisco fisso fitto fiume flora fluido flutto fobia focile fogna fondo
+fonte forbice forza fosco fosile fragola frana frutto fungo furore galea galera
+gamma gambe garbo garza gaudio giaco giana giogo giota giove girone glaciale
+gloria golena gonfio gorbia gordo gozzo gracile grafo grano grappa greca gregge
+griglia grillo gronda grotta guaina gualdo guanco guano guarda gusto ibice idolo
+idria ignavo imago imbuto impeto inciso incubo indice infero intero invaso irafo
+ircocervo irco iride iscaro isola isomero itala lagana laico larva lasca lavanda
+lavor lavoro lecito legio lentro leone lepre libero licino linfa lipide lisca
+litore loggia loria lotano lucido lusco lusinga madre maglio magma malga malva
+manna mante marasma marghe marna marotta marra marte marza massa mastro maturo
+medico membro memento merlo mesna miasma midollo milione mimosa minore mirra
+misura mocio moggio molle molte monile monsa mora morbo morendo motivo mozzo multa
+munto nacca naiade nappo narco narici nasata nastro natale navata nebbia necco
+negri nerbo nervo netto nieve nimbo nisco nitro nodulo norico norma nostro novanta
+novena novero nozze nucleo numeri nutria obeso obitare oblato obilare obliquo
+oblisco oceano occaso occhio odiate odore odiare offerta oliva oliveto omaso ombra
+onesta organa orsetto osanna oscura ospedale ossido ostro ottimo ovaldo ovino
+pacato paguro palco pandone panfilo parco patria pedata pedone penna perea pertica
+petalo pianura piante piazza picula piede piena pilota pineta piolo pirone pirula
+piuma pivolo placido platea plinto plutone poiana polenta polipo polpa pomice
+popolo portare portata potere potola pozza prato prezzo priora prode profeta
+proietto prologo pronto propino prorata proscia prova prudente psaro puleggio
+pulito pulpito pupilla purezza quercia rabbia racemo radice ragione ramera ramosa
+rancore rancura ranno rapace rapina rasura razione recede recula regolo relato
+remoto repola replica ressa resina reuma riamal ricamo ricerc rinculo ringhi risolto
+risotto rissoso rituale rodela roma rombo rondone rotolo rudere rugosa rugosit rumore
+salice salotto salubre salume samara sarago sardana sarsa sasso satura scabbia
+scabia scafo scalpo scampo scapula scarpa scelta scerna scerta scheda scherma
+sciame scilba scilla scippo sclera scoglio sconce scorza scriba scoria scultura
+sebare secchia secondo selci selva senna senno senza serale serena sereno serico
+sermone seroma serva severo sfregio sguardo sidereo silicio sillaba siluro sinodo
+sirena sistro soldo solenne solfuro solito solivo solstizio solvere somaro sonata
+sorbire sorica sorgiva sostare sottile spaccio spalto spandere spasima spavento
+specchi spelta spente spesso spezie spicca spilla spirale spirito splenio sprone
+stacca stanco stanno stanza starno stativo steare stecco stele stelo sterco sterno
+stesto stracco strage strana strazio striscia strutto suadere subire sudore sulco
+sutura taglia talamo tanfo tapiro tappeto tarsio tassello tavola tegola temolo
+tendine tentare termite terrazzo timone tirare tizzo torace tornire torso tossico
+tostare tovaglia trabeazione trachea tradire traffico tralcio trapano trapasso
+travaglio trebbia treccia trifoglio triglia trillo tringa tripudio triste troche
+troppo trotola truppa tunica tutore uscire valanga valenza valore valvola varare
+vasca velluto vendita veneno verace verbo vergine vernale vestito vetrano vibrare
+vitello volpone vomito vomere vortice vulcano zaffo zagara zanella zanna zebra
+zocco zombare zotico zurlo`;
+
+const rawWords = WORDS.toLowerCase().replace(/[^a-zàèéìòù\s]/g,'').split(/\s+/).filter(w=>w.length>=2);
+const WORD_SET = [...new Set(rawWords)];
+
+const SCORES = {a:1,b:5,c:2,d:5,e:1,f:5,g:8,h:8,i:1,j:0,k:0,l:3,m:3,n:2,o:1,p:5,q:10,r:2,s:1,t:2,u:3,v:8,w:0,x:0,y:0,z:8,à:0,è:0,é:0,ì:0,ò:0,ù:0};
+
+function letterScore(word){ return [...word].reduce((s,c)=>s+(SCORES[c]||0),0); }
+function normalize(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+
+function canMake(word, letters) {
+  const avail = {};
+  for(const c of letters) avail[c]=(avail[c]||0)+1;
+  for(const c of word){
+    const n=normalize(c);
+    if(avail[n]){avail[n]--;continue;}
+    if(avail[c]){avail[c]--;continue;}
+    return false;
+  }
+  return true;
+}
+
+let allResults = {};
+
+function unscramble(){
+  const raw=document.getElementById('letterInput').value.toLowerCase().trim();
+  const letters=normalize(raw).replace(/[^a-z]/g,'');
+  if(!letters) return;
+  const exactOnly=document.getElementById('exactOnly').checked;
+  const sw=normalize(document.getElementById('startsWith').value).trim();
+  const ew=normalize(document.getElementById('endsWith').value).trim();
+  const cw=normalize(document.getElementById('contains').value).trim();
+  const found=WORD_SET.filter(w=>{
+    if(exactOnly && normalize(w).length!==letters.length) return false;
+    const wn=normalize(w);
+    if(sw && !wn.startsWith(sw)) return false;
+    if(ew && !wn.endsWith(ew)) return false;
+    if(cw && !wn.includes(cw)) return false;
+    return canMake(w,letters);
+  }).sort((a,b)=>b.length-a.length||letterScore(b)-letterScore(a));
+
+  allResults={};
+  for(const w of found){const k=normalize(w).length;if(!allResults[k])allResults[k]=[];allResults[k].push(w);}
+  const lengths=Object.keys(allResults).map(Number).sort((a,b)=>b-a);
+  const lenFilter=document.getElementById('lengthFilter');
+  lenFilter.innerHTML='<option value="all">Tutte</option>';
+  lengths.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=`${l} lettere`;lenFilter.appendChild(o);});
+  document.getElementById('wordCount').textContent=found.length?`${found.length} parole`:'';
+  renderResults(found,raw,lengths);
+}
+
+function renderResults(found,letters,lengths){
+  const area=document.getElementById('results-area');
+  const noRes=document.getElementById('no-results');
+  if(!found.length){area.style.display='none';noRes.style.display='block';return;}
+  area.style.display='block';noRes.style.display='none';
+  document.getElementById('results-title').textContent=`Parole da «${letters.toUpperCase()}»`;
+  document.getElementById('results-meta').textContent=`${found.length} parole trovate`;
+  const tabsEl=document.getElementById('length-tabs');
+  tabsEl.innerHTML='<span class="tab-btn active" onclick="switchTab(\'all\',this)">Tutte</span>';
+  lengths.forEach(l=>{tabsEl.innerHTML+=`<span class="tab-btn" onclick="switchTab(${l},this)">${l} lettere (${allResults[l].length})</span>`;});
+  renderWords(found);
+}
+
+function switchTab(len,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const toShow=len==='all'?Object.values(allResults).flat():allResults[len]||[];
+  renderWords(toShow);
+}
+
+function renderWords(words){
+  const container=document.getElementById('words-container');
+  if(!words.length){container.innerHTML='';return;}
+  const byLen={};
+  for(const w of words){const k=normalize(w).length;if(!byLen[k])byLen[k]=[];byLen[k].push(w);}
+  const lens=Object.keys(byLen).map(Number).sort((a,b)=>b-a);
+  let html='';
+  for(const l of lens){
+    html+=`<div class="section-title">Parole di ${l} lettere (${byLen[l].length})</div><div class="words-grid">`;
+    for(const w of byLen[l]){html+=`<div class="word-card" onclick="copyWord('${w}')">${w.toUpperCase()}<br><span class="pts">${letterScore(w)} pt</span></div>`;}
+    html+='</div>';
+  }
+  container.innerHTML=html;
+}
+
+function filterByLength(){
+  const len=document.getElementById('lengthFilter').value;
+  const words=len==='all'?Object.values(allResults).flat():allResults[parseInt(len)]||[];
+  renderWords(words);
+}
+
+function copyWord(w){
+  navigator.clipboard?.writeText(w.toUpperCase()).catch(()=>{});
+  const t=document.getElementById('toast');
+  t.textContent=`✓ ${w.toUpperCase()} copiato!`;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+document.getElementById('letterInput').addEventListener('keydown',e=>{if(e.key==='Enter')unscramble();});
+</script>
+</body>
+</html>
