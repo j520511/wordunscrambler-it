@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wordunscrambler.it/sitemap.xml
